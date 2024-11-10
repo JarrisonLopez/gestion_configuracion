@@ -1,5 +1,5 @@
-import connectToDatabase from '../../../src/lib/mongoose';
-import Product from '../../../src/models/Product';
+import connectToDatabase from '../../src/lib/mongoose';
+import Product from '../../src/models/Product';
 
 export default async function handler(req, res) {
   // Intentar conectar a la base de datos
@@ -8,7 +8,7 @@ export default async function handler(req, res) {
     console.log("Connected to MongoDB successfully.");
   } catch (error) {
     console.error("Failed to connect to MongoDB:", error);
-    return res.status(500).json({ error: 'Database connection failed' });
+    return res.status(500).json({ error: 'Database connection failed', details: error.message });
   }
 
   // Manejar la solicitud GET para obtener productos
@@ -17,7 +17,8 @@ export default async function handler(req, res) {
       const products = await Product.find({});
       res.status(200).json(products);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      console.error("Failed to fetch products:", error);
+      res.status(500).json({ error: 'Failed to fetch products', details: error.message });
     }
   } 
   // Manejar la solicitud POST para agregar un nuevo producto
@@ -34,7 +35,8 @@ export default async function handler(req, res) {
       console.log("Product saved successfully:", product); // Registrar el producto guardado
       res.status(201).json(product);
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      console.error("Failed to save product:", error);
+      res.status(400).json({ error: 'Failed to save product', details: error.message });
     }
   } else {
     res.status(405).json({ error: 'Method not allowed' });
