@@ -7,15 +7,15 @@ const ProductSchema = new mongoose.Schema({
   },
   description: {
     type: String,
-    required: [true, 'Ingresar descripcion del producto'],
+    required: [true, 'Ingresar descripción del producto'],
   },
   price: {
     type: Number,
-    required: [true, 'ingresar el precio del producto.'],
+    required: [true, 'Ingresar el precio del producto.'],
   },
   quantity: {
     type: Number,
-    required: [true, 'INGRESAR LA CANTIDAD DEL PRODUCTO.'],
+    required: [true, 'Ingresar la cantidad del producto.'],
   },
 }, {
   timestamps: true,

@@ -3,9 +3,7 @@ import mongoose from 'mongoose';
 const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
-  throw new Error(
-    'fallo la conexion a la base de datos, verificar la variable de entorno',
-  );
+  throw new Error('Fallo la conexión a la base de datos, verifica la variable de entorno');
 }
 
 let cached = global.mongoose;

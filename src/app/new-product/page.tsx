@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import React, { useState } from 'react'
 import { Button } from "@/components/ui/button"
@@ -30,7 +30,7 @@ export default function NewProduct() {
     }
   }
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const newErrors: Record<string, string> = {}
     Object.entries(formData).forEach(([key, value]) => {
@@ -42,15 +42,30 @@ export default function NewProduct() {
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors)
     } else {
-      console.log('Datos del formulario:', formData)
-      setFormData({
-        name: '',
-        description: '',
-        price: '',
-        quantity: ''
-      })
-      setErrors({})
-      alert('Producto añadido con éxito!')
+      try {
+        const response = await fetch('/api/products', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        })
+        if (!response.ok) {
+          throw new Error('Error al añadir el producto')
+        }
+        const data = await response.json()
+        console.log('Datos del formulario:', data)
+        setFormData({
+          name: '',
+          description: '',
+          price: '',
+          quantity: ''
+        })
+        setErrors({})
+        alert('Producto añadido con éxito!')
+      } catch (error) {
+        alert(error.message)
+      }
     }
   }
 
