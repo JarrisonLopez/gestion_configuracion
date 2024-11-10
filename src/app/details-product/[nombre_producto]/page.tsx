@@ -1,8 +1,9 @@
-'use client'
+'use client';
 
-import React, { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'next/navigation'; // Importa useParams en lugar de useRouter
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 
 interface ProductData {
   name: string;
@@ -12,41 +13,43 @@ interface ProductData {
 }
 
 export default function ProductDetails() {
-  const [product, setProduct] = useState<ProductData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const { nombre_producto } = useParams(); // Usa useParams para obtener el parámetro dinámico
+
+  const [product, setProduct] = useState<ProductData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        // Simulating API call with setTimeout
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        
-        // Mock data - replace this with your actual API call
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
         const mockData: ProductData = {
-          name: "Producto de Ejemplo",
+          name: nombre_producto as string || "Producto de Ejemplo",
           description: "Esta es una descripción detallada del producto de ejemplo.",
           price: 99.99,
           quantity: 50
-        }
-        
-        setProduct(mockData)
-        setLoading(false)
-      } catch (err) {
-        setError('Error al cargar los datos del producto')
-        setLoading(false)
-      }
-    }
+        };
 
-    fetchProduct()
-  }, [])
+        setProduct(mockData);
+        setLoading(false);
+      } catch (err) {
+        setError('Error al cargar los datos del producto');
+        setLoading(false);
+      }
+    };
+
+    if (nombre_producto) {
+      fetchProduct();
+    }
+  }, [nombre_producto]);
 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
         <p className="text-xl font-semibold">Cargando...</p>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -54,7 +57,7 @@ export default function ProductDetails() {
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
         <p className="text-xl font-semibold text-red-500">{error}</p>
       </div>
-    )
+    );
   }
 
   if (!product) {
@@ -62,7 +65,7 @@ export default function ProductDetails() {
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
         <p className="text-xl font-semibold">No se encontró información del producto</p>
       </div>
-    )
+    );
   }
 
   return (
@@ -91,5 +94,5 @@ export default function ProductDetails() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
