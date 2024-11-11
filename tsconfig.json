@@ -1,6 +1,10 @@
 {
   "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
@@ -12,15 +16,18 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "baseUrl": ".",          // Esto habilita las rutas relativas a partir de la raíz
+    "baseUrl": ".", // Esto habilita las rutas relativas a partir de la raíz
     "paths": {
-      "@/": ["./src/*"]      // Asegúrate de que el alias sea `@/` y que apunte a `src/*`
+      "@/": [
+        "./src/*"
+      ] // Asegúrate de que el alias sea `@/` y que apunte a `src/*`
     },
     "plugins": [
       {
         "name": "next"
       }
-    ]
+    ],
+    "strictNullChecks": true
   },
   "include": [
     "next-env.d.ts",
