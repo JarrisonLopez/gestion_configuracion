@@ -1,46 +1,49 @@
-"use client";
+'use client'
 
-import React, { useState } from 'react';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
+import React, { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
+import { ArrowLeft } from 'lucide-react'
 
 export default function NewProduct() {
+  const router = useRouter()
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     price: '',
     quantity: ''
-  });
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  })
+  const [errors, setErrors] = useState<Record<string, string>>({})
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target
     setFormData(prevState => ({
       ...prevState,
       [name]: value
-    }));
+    }))
     if (errors[name]) {
       setErrors(prevErrors => {
-        const newErrors = { ...prevErrors };
-        delete newErrors[name];
-        return newErrors;
-      });
+        const newErrors = { ...prevErrors }
+        delete newErrors[name]
+        return newErrors
+      })
     }
-  };
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const newErrors: Record<string, string> = {};
+    e.preventDefault()
+    const newErrors: Record<string, string> = {}
     Object.entries(formData).forEach(([key, value]) => {
       if (!value.trim()) {
-        newErrors[key] = 'Este campo es obligatorio';
+        newErrors[key] = 'Este campo es obligatorio'
       }
-    });
+    })
 
     if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+      setErrors(newErrors)
     } else {
       try {
         const response = await fetch('/api/products', {
@@ -49,29 +52,38 @@ export default function NewProduct() {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify(formData)
-        });
+        })
         
         if (!response.ok) {
-          throw new Error('Error al añadir el producto');
+          throw new Error('Error al añadir el producto')
         }
-        const data = await response.json();
-        console.log('Datos del formulario:', data);
+        const data = await response.json()
+        console.log('Datos del formulario:', data)
         setFormData({
           name: '',
           description: '',
           price: '',
           quantity: ''
-        });
-        setErrors({});
-        alert('Producto añadido con éxito!');
+        })
+        setErrors({})
+        alert('Producto añadido con éxito!')
       } catch (error) {
-        alert(error.message);
+        alert(error.message)
       }
     }
-  };
+  }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="relative flex items-center justify-center min-h-screen bg-gray-100">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute top-4 left-4 text-black hover:bg-gray-200"
+        onClick={() => router.back()}
+        aria-label="Volver a la página anterior"
+      >
+        <ArrowLeft className="h-6 w-6" />
+      </Button>
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md border-2 border-black">
         <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Nuevo Producto</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -83,7 +95,7 @@ export default function NewProduct() {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              className={`w-full mt-1 ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
+              className={errors.name ? 'border-red-500' : ''}
             />
             {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
           </div>
@@ -94,7 +106,7 @@ export default function NewProduct() {
               name="description"
               value={formData.description}
               onChange={handleChange}
-              className={`w-full mt-1 ${errors.description ? 'border-red-500' : 'border-gray-300'}`}
+              className={errors.description ? 'border-red-500' : ''}
             />
             {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
           </div>
@@ -108,7 +120,7 @@ export default function NewProduct() {
               onChange={handleChange}
               min="0"
               step="0.01"
-              className={`w-full mt-1 ${errors.price ? 'border-red-500' : 'border-gray-300'}`}
+              className={errors.price ? 'border-red-500' : ''}
             />
             {errors.price && <p className="text-red-500 text-sm mt-1">{errors.price}</p>}
           </div>
@@ -121,7 +133,7 @@ export default function NewProduct() {
               value={formData.quantity}
               onChange={handleChange}
               min="0"
-              className={`w-full mt-1 ${errors.quantity ? 'border-red-500' : 'border-gray-300'}`}
+              className={errors.quantity ? 'border-red-500' : ''}
             />
             {errors.quantity && <p className="text-red-500 text-sm mt-1">{errors.quantity}</p>}
           </div>
@@ -131,5 +143,5 @@ export default function NewProduct() {
         </form>
       </div>
     </div>
-  );
+  )
 }

@@ -1,12 +1,12 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import { useRouter, useParams } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { Trash2 } from 'lucide-react'
-import { useParams } from 'next/navigation'
+import { Trash2, ArrowLeft } from 'lucide-react'
 
 interface ProductData {
   name: string;
@@ -16,15 +16,17 @@ interface ProductData {
 }
 
 export default function EditProduct({ productId = '1' }: { productId?: string }) {
-    const { nombre_producto } = useParams(); 
+  const router = useRouter()
+  const { id } = useParams()!
   
-    const [formData, setFormData] = useState<ProductData>({
-    name: nombre_producto as string || "",
+  const [formData, setFormData] = useState<ProductData>({
+    name: id as string || "",
     description: '',
     price: '',
     quantity: ''
   })
   
+  const [error, setError] = useState<string | null>(null)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isLoading, setIsLoading] = useState(true)
 
@@ -32,7 +34,7 @@ export default function EditProduct({ productId = '1' }: { productId?: string })
     const fetchProductData = async () => {
       setIsLoading(true)
       try {
-        const response = await fetch(`https://api.example.com/products/${productId}`)
+        const response = await fetch(`/api/products/${id}`)
         if (!response.ok) {
           throw new Error('Failed to fetch product data')
         }
@@ -45,14 +47,28 @@ export default function EditProduct({ productId = '1' }: { productId?: string })
         })
       } catch (error) {
         console.error('Error fetching product data:', error)
-        alert('Error al cargar los datos del producto. Por favor, intente de nuevo.')
+        setError("Error al cargar los datos del producto")
+        
       } finally {
         setIsLoading(false)
       }
     }
 
+
+    
     fetchProductData()
-  }, [productId])
+  }, [productId, id])
+  
+  
+  
+  if (error){
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <p className="text-xl font-semibold text-red-500">{error}</p>
+      </div>
+    )
+  }
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -69,7 +85,7 @@ export default function EditProduct({ productId = '1' }: { productId?: string })
     }
   }
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const newErrors: Record<string, string> = {}
     Object.entries(formData).forEach(([key, value]) => {
@@ -81,8 +97,26 @@ export default function EditProduct({ productId = '1' }: { productId?: string })
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors)
     } else {
-      console.log('Datos actualizados del producto:', formData)
-      alert('Producto actualizado con éxito!')
+      try {
+        const response = await fetch(`/api/products/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        })
+
+        if (!response.ok) {
+          throw new Error('Fallo al actualizar el producto')
+        }
+
+        const updatedProduct = await response.json()
+        console.log('Producto actualizado con éxito:', updatedProduct)
+        alert('Producto actualizado con éxito!')
+      } catch (error) {
+        console.error("Fallo al actualizar el producto:", error)
+        alert('Error al actualizar el producto. Por favor, intente de nuevo.')
+      }
     }
   }
 
@@ -95,7 +129,17 @@ export default function EditProduct({ productId = '1' }: { productId?: string })
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="relative flex items-center justify-center min-h-screen bg-gray-100">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute top-4 left-4 text-black hover:bg-gray-200"
+        onClick={() => router.back()}
+        aria-label="Volver a la página anterior"
+      >
+        <ArrowLeft className="h-6 w-6" />
+      </Button>
+
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md border-2 border-gray-200 relative">
         <button
           onClick={handleDelete}
@@ -114,7 +158,7 @@ export default function EditProduct({ productId = '1' }: { productId?: string })
               name="name"
               value={formData.name}
               onChange={handleChange}
-              className={`w-full mt-1 ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
+              className={errors.name ? 'border-red-500' : ''}
             />
             {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
           </div>
@@ -125,7 +169,7 @@ export default function EditProduct({ productId = '1' }: { productId?: string })
               name="description"
               value={formData.description}
               onChange={handleChange}
-              className={`w-full mt-1 ${errors.description ? 'border-red-500' : 'border-gray-300'}`}
+              className={errors.description ? 'border-red-500' : ''}
             />
             {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
           </div>
@@ -139,7 +183,7 @@ export default function EditProduct({ productId = '1' }: { productId?: string })
               onChange={handleChange}
               min="0"
               step="0.01"
-              className={`w-full mt-1 ${errors.price ? 'border-red-500' : 'border-gray-300'}`}
+              className={errors.price ? 'border-red-500' : ''}
             />
             {errors.price && <p className="text-red-500 text-sm mt-1">{errors.price}</p>}
           </div>
@@ -152,7 +196,7 @@ export default function EditProduct({ productId = '1' }: { productId?: string })
               value={formData.quantity}
               onChange={handleChange}
               min="0"
-              className={`w-full mt-1 ${errors.quantity ? 'border-red-500' : 'border-gray-300'}`}
+              className={errors.quantity ? 'border-red-500' : ''}
             />
             {errors.quantity && <p className="text-red-500 text-sm mt-1">{errors.quantity}</p>}
           </div>

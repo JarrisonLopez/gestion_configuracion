@@ -1,9 +1,9 @@
 import Link from 'next/link'
 import { Card, CardContent } from "@/components/ui/card"
 
-export default function ProductoCard({ nombre_producto = "Producto Ejemplo" }: { nombre_producto: string }) {
+export default function ProductoCard({ nombre_producto = "Producto Ejemplo" ,id}: { nombre_producto: string,id:string }) {
   // La URL ahora apunta a la ruta específica que has solicitado
-  const url = `/details-product/${encodeURIComponent(nombre_producto)}`
+  const url = `/details-product/${encodeURIComponent(id)}`
 
   return (
     <Link href={url} className="block w-full max-w-sm mx-auto">
