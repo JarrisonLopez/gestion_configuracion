@@ -1,8 +1,10 @@
-'use client'
+'use client';
 
-import React, { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 
 interface ProductData {
   name: string;
@@ -12,41 +14,54 @@ interface ProductData {
 }
 
 export default function ProductDetails() {
-  const [product, setProduct] = useState<ProductData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const router = useRouter();
+  const { id } = router.query;
+  const [product, setProduct] = useState<ProductData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        // Simulating API call with setTimeout
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        
-        // Mock data - replace this with your actual API call
-        const mockData: ProductData = {
-          name: "Producto de Ejemplo",
-          description: "Esta es una descripción detallada del producto de ejemplo.",
-          price: 99.99,
-          quantity: 50
+        const response = await fetch(`/api/products/${id}`);
+        if (!response.ok) {
+          throw new Error('Error al cargar el producto');
         }
-        
-        setProduct(mockData)
-        setLoading(false)
+        const data = await response.json();
+        setProduct(data);
+        setLoading(false);
       } catch (err) {
-        setError('Error al cargar los datos del producto')
-        setLoading(false)
+        setError('Error al cargar los datos del producto');
+        setLoading(false);
       }
-    }
+    };
 
-    fetchProduct()
-  }, [])
+    if (id) {
+      fetchProduct();
+    }
+  }, [id]);
+
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(`/api/products/${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Error al eliminar el producto');
+      }
+      alert('Producto eliminado con éxito!');
+      router.push('/products');
+    } catch (error) {
+      alert(error.message);
+    }
+  };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
         <p className="text-xl font-semibold">Cargando...</p>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -54,7 +69,7 @@ export default function ProductDetails() {
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
         <p className="text-xl font-semibold text-red-500">{error}</p>
       </div>
-    )
+    );
   }
 
   if (!product) {
@@ -62,7 +77,7 @@ export default function ProductDetails() {
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
         <p className="text-xl font-semibold">No se encontró información del producto</p>
       </div>
-    )
+    );
   }
 
   return (
@@ -88,8 +103,11 @@ export default function ProductDetails() {
             <Label className="text-gray-700 font-semibold">Cantidad</Label>
             <p className="mt-1">{product.quantity}</p>
           </div>
+          <Button onClick={handleDelete} className="w-full bg-red-600 hover:bg-red-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-red-400">
+            Eliminar Producto
+          </Button>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

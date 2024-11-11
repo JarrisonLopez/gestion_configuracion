@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from 'react'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
+import React, { useState } from 'react';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
 export default function NewProduct() {
   const [formData, setFormData] = useState({
@@ -12,35 +12,35 @@ export default function NewProduct() {
     description: '',
     price: '',
     quantity: ''
-  })
-  const [errors, setErrors] = useState<Record<string, string>>({})
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setFormData(prevState => ({
       ...prevState,
       [name]: value
-    }))
+    }));
     if (errors[name]) {
       setErrors(prevErrors => {
-        const newErrors = { ...prevErrors }
-        delete newErrors[name]
-        return newErrors
-      })
+        const newErrors = { ...prevErrors };
+        delete newErrors[name];
+        return newErrors;
+      });
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const newErrors: Record<string, string> = {}
+    e.preventDefault();
+    const newErrors: Record<string, string> = {};
     Object.entries(formData).forEach(([key, value]) => {
       if (!value.trim()) {
-        newErrors[key] = 'Este campo es obligatorio'
+        newErrors[key] = 'Este campo es obligatorio';
       }
-    })
+    });
 
     if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors)
+      setErrors(newErrors);
     } else {
       try {
         const response = await fetch('/api/products', {
@@ -49,25 +49,26 @@ export default function NewProduct() {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify(formData)
-        })
+        });
+        
         if (!response.ok) {
-          throw new Error('Error al añadir el producto')
+          throw new Error('Error al añadir el producto');
         }
-        const data = await response.json()
-        console.log('Datos del formulario:', data)
+        const data = await response.json();
+        console.log('Datos del formulario:', data);
         setFormData({
           name: '',
           description: '',
           price: '',
           quantity: ''
-        })
-        setErrors({})
-        alert('Producto añadido con éxito!')
+        });
+        setErrors({});
+        alert('Producto añadido con éxito!');
       } catch (error) {
-        alert(error.message)
+        alert(error.message);
       }
     }
-  }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -130,5 +131,5 @@ export default function NewProduct() {
         </form>
       </div>
     </div>
-  )
+  );
 }

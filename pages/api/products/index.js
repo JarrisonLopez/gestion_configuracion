@@ -1,8 +1,8 @@
-import connectToDatabase from '../../src/lib/mongoose';
-import Product from '../../src/models/Product';
+import connectToDatabase from '../../../src/lib/mongoose';
+import Product from '../../../src/models/Product';
 
 export default async function handler(req, res) {
-  // Intentar conectar a la base de datos
+  // Connect to the database
   try {
     await connectToDatabase();
     console.log("Connected to MongoDB successfully.");
@@ -11,7 +11,7 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Database connection failed', details: error.message });
   }
 
-  // Manejar la solicitud GET para obtener productos
+  // Handle GET request to fetch all products
   if (req.method === 'GET') {
     try {
       const products = await Product.find({});
@@ -21,18 +21,18 @@ export default async function handler(req, res) {
       res.status(500).json({ error: 'Failed to fetch products', details: error.message });
     }
   } 
-  // Manejar la solicitud POST para agregar un nuevo producto
+  // Handle POST request to create a new product
   else if (req.method === 'POST') {
     try {
-      console.log("Received data:", req.body); // Registrar datos recibidos
+      console.log("Received data:", req.body); // Log received data
 
-      // Crear una nueva instancia de Product
+      // Create a new Product instance
       const product = new Product(req.body);
 
-      // Guardar el producto en la base de datos
+      // Save the product to the database
       await product.save();
 
-      console.log("Product saved successfully:", product); // Registrar el producto guardado
+      console.log("Product saved successfully:", product); // Log the saved product
       res.status(201).json(product);
     } catch (error) {
       console.error("Failed to save product:", error);
