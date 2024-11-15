@@ -20,7 +20,7 @@ export default function ProductoCard({ nombre_producto = "Producto Ejemplo" ,id,
           <h2 className="text-xl font-semibold text-center">{nombre_producto}</h2>
         </CardContent>
       </Card>
-      <span className="sr-only">{user} {nombre_producto}</span>
+      <span className="sr-only">{data} {nombre_producto}</span>
     </Link>
   )
 }
