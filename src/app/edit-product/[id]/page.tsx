@@ -16,7 +16,7 @@ interface ProductData {
   quantity: string;
 }
 
-export default function EditProduct({ productId = '1' }: { productId?: string }) {
+export default function EditProduct() {
   const router = useRouter()
   const { id } = useParams()!
   
@@ -58,7 +58,7 @@ export default function EditProduct({ productId = '1' }: { productId?: string })
 
     
     fetchProductData()
-  }, [productId, id])
+  }, [id])
   
   
   
