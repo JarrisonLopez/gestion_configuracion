@@ -2,8 +2,8 @@ import Link from 'next/link'
 import { Card, CardContent } from "@/components/ui/card"
 
 export default function ProductoCard({ nombre_producto = "Producto Ejemplo" ,id,user}: { nombre_producto: string,id:string ,user:string}) {
-  var url:string;
-  var data:string;
+  let url:string;
+  let data:string;
 
   if(user==="user"){
     url = `/details-product/${encodeURIComponent(id)}`
