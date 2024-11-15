@@ -15,7 +15,7 @@ interface ProductData {
 }
 
 export default function ProductDetails() {
-  const { id } = useParams()
+  const { id } = useParams()!
   const router = useRouter()
 
   const [product, setProduct] = useState<ProductData | null>(null)

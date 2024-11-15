@@ -1,14 +1,19 @@
 'use client'
 
-import ProductoCard from "../componets/producto-card"
+import ProductoCard from "../../componets/producto-card"
 import React, { useEffect, useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useParams } from "next/navigation"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
 
 export default function Product() {
-  interface product {name:string,price:number}
-  const [productos, setProductos] = useState([])
-  const [filteredProductos, setFilteredProductos] = useState([])
+  interface product {name:string, price:number, _id: string}
+
+  const { user } = useParams()!
+  const [productos, setProductos] = useState<product[]>([])
+  const [filteredProductos, setFilteredProductos] = useState<product[]>([])
   const [nameFilter, setNameFilter] = useState("")
   const [minPrice, setMinPrice] = useState("")
   const [maxPrice, setMaxPrice] = useState("")
@@ -43,7 +48,7 @@ export default function Product() {
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Lista de Productos</h1>
       
-      <div className="flex flex-wrap gap-4 mb-6">
+      <div className="flex flex-wrap gap-4 mb-6 items-end">
         <div className="flex-1 min-w-[200px]">
           <Label htmlFor="nameFilter" className="mb-2 block">Nombre del producto</Label>
           <Input
@@ -74,11 +79,20 @@ export default function Product() {
             onChange={(e) => setMaxPrice(e.target.value)}
           />
         </div>
+        {user === 'admin' && (
+          <div className="ml-auto">
+            <Link href="/new-product">
+              <Button variant="secondary" className="bg-black text-white hover:bg-gray-800">
+                Crear
+              </Button>
+            </Link>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredProductos.map((producto:{name:string,_id:any}) => (
-          <ProductoCard nombre_producto={producto.name} id={producto._id} />
+        {filteredProductos.map((producto: product) => (
+          <ProductoCard key={producto._id} nombre_producto={producto.name} id={producto._id} user={user as string} />
         ))}
       </div>
     </div>

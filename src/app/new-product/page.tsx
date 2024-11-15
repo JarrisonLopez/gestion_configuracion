@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { ArrowLeft } from 'lucide-react'
+import Swal from 'sweetalert2'
 
 export default function NewProduct() {
   const router = useRouter()
@@ -66,9 +67,14 @@ export default function NewProduct() {
           quantity: ''
         })
         setErrors({})
-        alert('Producto añadido con éxito!')
+
+        Swal.fire("Producto añadido con éxito!", "", "success");
+        router.push('/products/admin');
+
+
       } catch (error) {
-        alert(error.message)
+        Swal.fire(error.message, "", "error");
+        
       }
     }
   }

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Trash2, ArrowLeft } from 'lucide-react'
+import Swal from 'sweetalert2'
 
 interface ProductData {
   name: string;
@@ -110,18 +111,48 @@ export default function EditProduct({ productId = '1' }: { productId?: string })
           throw new Error('Fallo al actualizar el producto')
         }
 
-        const updatedProduct = await response.json()
-        console.log('Producto actualizado con éxito:', updatedProduct)
-        alert('Producto actualizado con éxito!')
+        
+        Swal.fire("Producto actualizado con éxito!", "", "success");
+        router.push('/products/admin');
+
+
+
       } catch (error) {
         console.error("Fallo al actualizar el producto:", error)
-        alert('Error al actualizar el producto. Por favor, intente de nuevo.')
+        
+        Swal.fire("Error al actualizar el producto. Por favor, intente de nuevo.", "", "error");
       }
     }
   }
 
   const handleDelete = () => {
-    alert('¿Estás seguro de que quieres eliminar este producto?')
+    Swal.fire({
+      title: "desea eliminar la publicación?",
+      showCancelButton: true,
+      confirmButtonText: "eliminar",
+    }).then(async (result) => {
+      
+      if (result.isConfirmed) {
+        try {
+          const response = await fetch(`/api/products/${id}`, {
+            method: 'DELETE',
+          });
+      
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Error al eliminar el producto');
+          }
+          Swal.fire("Producto eliminado exitosamente", "", "success");
+          router.push('/products/admin');
+          
+         
+          
+        } catch (error) {
+          console.error('Fallo al eliminar el producto:', error.message);
+          Swal.fire("Fallo al eliminar el producto", "", "error");
+        }
+      }
+    });
   }
 
   if (isLoading) {
